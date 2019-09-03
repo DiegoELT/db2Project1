@@ -20,10 +20,12 @@ Tenemos una clase Record para hacer lo básico:
 - Funct Set Data
 - Funct Show Data
 - Var Key
-Por herencia, sacamos dos clases de Record (una por cada archivo):
-- RecordA
-- RecordB
-(agregar un nombre más descriptivo).
+
+### RecordA
+Detalles del record de la FileA
+
+### RecordB
+Detalles del record de la FileB
 
 ## FileOrganization
 Tenemos una clase base FileOrganization que acepta templates de Record (para pasarle cualquier objeto que sea record).
@@ -34,9 +36,16 @@ Tenemos una clase base FileOrganization que acepta templates de Record (para pas
 - Scan (int n) o Scan (), determina cuántas filas mostrar.
 
 ### RandomFile
+Implementación de RandomFile
+
 ### HashFile
+Implementación de Hash File. Función Hash puede ser un parámetro.
+
 #### Static Hash File
+Implementación de Static Hash
+
 #### Dynamic Hash File
+Implementación de Dynamic Hash
 
 ## Otros
 Contiene funciones para: 
