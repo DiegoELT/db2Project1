@@ -19,6 +19,7 @@ Proyecto de base de datos II sobre organización de archivos en C++ con Qt para 
 Tenemos una clase Record para hacer lo básico:
 - Funct Set Data
 - Funct Show Data
+- Funct Write y Read
 - Var Key
 
 ### RecordA
