@@ -1,6 +1,8 @@
+
+template <class T>
 class Record {
 protected:
-    int key;
+    T key;
 public:
     virtual void setData() = 0;
     virtual void showData() = 0;

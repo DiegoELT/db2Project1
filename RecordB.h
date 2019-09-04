@@ -1,5 +1,7 @@
 #include "Record.h"
 #include <iostream>
+
+template <class T>
 class RecordB : Record {
 
 private:

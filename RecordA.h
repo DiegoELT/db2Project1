@@ -1,6 +1,7 @@
 #include "Record.h"
 #include <iostream>
 
+template <class T>
 class RecordA : private Record {
 private:
     int notKey;

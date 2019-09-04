@@ -45,3 +45,20 @@ public:
 
 
 };
+
+std::string readString(std::fstream &stream) {
+    int tam;
+    stream.read((char *) &tam, sizeof(tam));
+    char *buffer = new char[tam + 1];
+    stream.read(buffer, tam);
+    buffer[tam] = '\0';
+    std::string result = buffer;
+    delete buffer;
+    return result;
+}
+
+void writeString(std::fstream &stream, std::string str) {
+    int len = str.size();
+    stream.write((char *) &len, sizeof(len));
+    stream.write(str.c_str(), len);
+}
