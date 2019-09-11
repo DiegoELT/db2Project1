@@ -1,2 +1,3 @@
-# We don't need to load the a.out
+# Some files that we don't need to upload
 *.out
+*.vscode
