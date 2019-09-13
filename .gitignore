@@ -1,4 +1,5 @@
 # Some files that we don't need to upload
 *.out
 *.vscode
+*.dSYM
 main
