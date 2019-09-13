@@ -10,8 +10,11 @@ Proyecto de base de datos II sobre organización de archivos en C++ con Qt para 
 - [EXTRA] Ejecutar un join.
 
 # Formato
-- Case Style:
-- Identación:
+- Case Style: camelCase para variables, PascalCase para clases y headers, snake_case para nombres de files.
+- Identación: 
+if (true) {
+
+}
 
 # Headers
 
