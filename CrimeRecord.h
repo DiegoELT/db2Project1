@@ -1,30 +1,28 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
-struct CrimeData{
-  string incidentNumber;
+struct CrimeData {
+  std::string incidentNumber;
   int offenseCode;
-  string district;
+  std::string district;
   int reportingArea;
   char shooting;
   int year;
   int month;
-  string dayOfWeek;
+  std::string dayOfWeek;
   int hour;
-  string ucrPart;
-  string street; 
+  std::string ucrPart;
+  std::string street; 
 };
 
 class CrimeRecord{
-private:  
-  CrimeData information;
+  public:
+	CrimeRecord();
+	CrimeRecord(CrimeData information);
+	void setCrime();
+	std::string getKey();
+	void showData();
 
-public:
-  CrimeRecord();
-  CrimeRecord(CrimeData _information);
-  void setCrime();
-  string getKey();
-  void showData();
+  private:  
+	CrimeData m_Information;
 };
