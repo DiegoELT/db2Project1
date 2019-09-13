@@ -1,6 +1,6 @@
-OBJECTS = main.cpp CrimeRecord.cpp CrimeRecord.h
+OBJECTS = main.cpp CrimeRecord.cpp
 STD = -std=c++17
-MYFLAGS = -g -Wall
+MYFLAGS = -g -Wall 
 CXX = g++
 EXEC = main
 

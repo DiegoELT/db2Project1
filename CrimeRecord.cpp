@@ -48,4 +48,5 @@ void CrimeRecord::showData() {
   std::cout << "Day of Week: " << m_Information.dayOfWeek << "\n";
   std::cout << "Hour: " << m_Information.hour << "\n";
   std::cout << "UCR Part: " << m_Information.ucrPart << "\n";
+  std::cout << "Street: " << m_Information.street << "\n";
 }
