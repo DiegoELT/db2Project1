@@ -1,10 +1,9 @@
-#include "Record.h"
 #include <iostream>
 
-template <class T>
-class RecordB : Record {
+class RecordB {
 
 private:
+    int key;
     int notKey;
 public:
     void setData() {
