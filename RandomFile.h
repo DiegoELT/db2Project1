@@ -1,11 +1,8 @@
-#include <string>
+#include "FileOrganization.h"
 #include <map>
-#include <fstream>
-#include <iostream>
 
-
-template <class T>
-class RandomFile {
+template<class T>
+class RandomFile : public FileOrganization <T>{
 private:
     std::string fileName;
     std::string indexName;
@@ -20,19 +17,19 @@ public:
     void scan();
 };
 
-template <class T>
+template <typename T>
 RandomFile<T>::RandomFile(std::string name){
     fileName = name;
     indexName = fileName + "_ind";
     readIndex();
 }
 
-template <class T>
+template <typename T>
 RandomFile<T>::~RandomFile(){
     writeIndex();
 }
 
-template <class T>
+template <typename T>
 void RandomFile<T>::search(T record){
     T foundRecord;
     char * key = record.getKey();
@@ -52,7 +49,7 @@ void RandomFile<T>::search(T record){
     
 }
 
-template <class T>
+template <typename T>
 void RandomFile<T>::insertion(T record){
     std::ofstream outFile;
     outFile.open(fileName, std::ios::binary | std::ios::app);
@@ -62,7 +59,7 @@ void RandomFile<T>::insertion(T record){
     index[record.getKey()] = pos;
 }
 
-template <class T>
+template <typename T>
 void RandomFile<T>::writeIndex(){
     std::ofstream outFile;
     outFile.open(indexName, std::ios::out | std::ios::binary);
@@ -73,7 +70,7 @@ void RandomFile<T>::writeIndex(){
     outFile.close();
 }
 
-template <class T>
+template <typename T>
 void RandomFile<T>::readIndex(){
     std::ifstream inFile;
     inFile.open(indexName, std::ios::in | std::ios::binary);
@@ -86,8 +83,9 @@ void RandomFile<T>::readIndex(){
     inFile.close();
 }
 
-template <class T>
+template <typename T>
 void RandomFile<T>::scan(){
+    
     std::ifstream inFile;
     inFile.open(fileName, std::ios::binary);
     T record;

@@ -1,9 +1,10 @@
 #include <iostream>
 #include "Record.h"
 
-class OffenseCodeRecord : private Record <int> {
+class OffenseCodeRecord : public Record
+{
 private:
-    int offenseCode;
+    char offenseCode [5];
     char description [50];
 public:
     void setData(){
@@ -14,7 +15,7 @@ public:
         std::cout << offenseCode << std::endl;
         std::cout << description << std::endl;
     }
-    int getKey(){
+    char * getKey(){
         return offenseCode;
     }
 };

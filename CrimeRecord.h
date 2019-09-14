@@ -1,10 +1,10 @@
 #include <iostream>
 #include "Record.h"
 
-class CrimeRecord : private Record <char *>{
+class CrimeRecord : public Record {
 private:
     char incidentNumber [10];
-    int offenseCode;
+    char offenseCode [5];
     char district [4];
     int reportingArea;
     char shooting;
