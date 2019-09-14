@@ -1,10 +1,13 @@
-#include "RecordA.h"
+#include "CrimeRecord.h"
 #include "RandomFile.h"
 
 int main(){
-    RecordA record;
-    record.setData();
-    record.showData();
-    RandomFile <RecordA> random("data");
-    
+    CrimeRecord recordA;
+    RandomFile <CrimeRecord> randomA("data");
+    randomA.insertion(recordA);
+    randomA.scan();
+    std::cout << "Data. " << std::endl;
+    randomA.search(recordA);
+
+
 }
