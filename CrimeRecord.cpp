@@ -50,3 +50,19 @@ void CrimeRecord::showData() {
   std::cout << "UCR Part: " << m_Information.ucrPart << "\n";
   std::cout << "Street: " << m_Information.street << "\n";
 }
+
+void CrimeRecord::readFromFile(std::ifstream& inCrimes){
+  std::string auxWord;
+  std::getline(inCrimes, m_Information.incidentNumber, ',');
+  std::getline(inCrimes, auxWord, ','); m_Information.offenseCode = std::stoi(auxWord);
+  std::getline(inCrimes, m_Information.district, ',');
+  std::getline(inCrimes, auxWord, ','); m_Information.reportingArea = std::stoi(auxWord);
+  std::getline(inCrimes, auxWord, ','); m_Information.shooting = auxWord[0];
+  std::getline(inCrimes, auxWord, ','); m_Information.year = std::stoi(auxWord);
+  std::getline(inCrimes, auxWord, ','); m_Information.month = std::stoi(auxWord);
+  std::getline(inCrimes, m_Information.dayOfWeek, ',');
+  std::getline(inCrimes, auxWord, ','); m_Information.hour = std::stoi(auxWord);
+  std::getline(inCrimes, m_Information.ucrPart, ',');
+  std::getline(inCrimes, m_Information.street, '\n');
+}
+

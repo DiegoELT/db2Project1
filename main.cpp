@@ -1,9 +1,18 @@
 #include "CrimeRecord.h"
-
-using namespace std;
+#include <fstream> 
 
 int main(){
+  std::ifstream inCrime;
+  inCrime.open("tables/crime.csv", std::ios::in);
+
+  std::cout << "Opened File. \n";
+  
+  std::string word;
+  std::getline(inCrime, word);
+
   CrimeRecord testCrime;
-  testCrime.setCrime();
+
+  testCrime.readFromFile(inCrime);
+  testCrime.readFromFile(inCrime)testCrime.readFromFile(inCrime);;
   testCrime.showData();
 }

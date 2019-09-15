@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 
 struct CrimeData {
@@ -22,6 +23,7 @@ class CrimeRecord{
 	void setCrime();
 	std::string getKey();
 	void showData();
+  void readFromFile(std::ifstream& inCrimes);
 
   private:  
 	CrimeData m_Information;
