@@ -16,14 +16,7 @@ private:
     char ucrPart [20];
     char street [20];
 public:
-    void setData(std::string csvLine) {
-        std::cout << csvLine << std::endl;
-        std::istream *stream1;
-        stream1 = &csvLine;
-        std::string token;
-        std::getline(stream1, token, ',');
-        std::cout << token;
-
+    void setData() {
         std::cout << "Enter: id "; std::cin >> incidentNumber; std::cout << "\n";
         std::cout << "Enter: offense "; std::cin >> offenseCode; std::cout << "\n";
         std::cout << "Enter: district "; std::cin >> district; std::cout << "\n";
