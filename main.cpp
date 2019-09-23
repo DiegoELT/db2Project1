@@ -19,9 +19,6 @@ int main(){
   //IndexFile index;
   std::cout << hashRecord(testCrime) << "\n";
 
-  std::cout << "Testing if file exists.\n";
-  std::cout << fileExists("olakAse.cpp") << "\n";
-
   IndexFile testIndex("testFile.bin");
   testIndex.writeInBucket(testCrime);
 }

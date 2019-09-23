@@ -17,7 +17,12 @@ IndexFile::IndexFile(std::string _fileName){
   if (fileExists(fileName)){
     std::ifstream indexArchive;
     indexArchive.open(fileName, std::ios::binary);
-    indexArchive.read((char*) &index, sizeof(IndexMap));
+
+    size_t sizeToRead;
+    indexArchive.read((char*) &sizeToRead, sizeof(size_t));
+    indexArchive.read((char*) &index.saveMap, sizeToRead);
+    indexArchive.read((char*) &sizeToRead, sizeof(size_t));
+    indexArchive.read((char*) &index.nextItemMap, sizeToRead);
   } //If the file exists, read the index from there. 
 }
 
@@ -38,9 +43,14 @@ void IndexFile::writeInBucket(CrimeRecord crime){
     index.nextItemMap[_fileName] = _nextFileName; 
     std::ofstream writeIndex;
     writeIndex.open(fileName, std::ios::out | std::ios::binary);
-    writeIndex.write((char *) &index, sizeof(IndexMap));
+    
+    size_t sizeToWrite = sizeof(index.saveMap);
+    size_t sizeToWrite2 = sizeof(index.nextItemMap);
 
-    std::cout << "Updated index file. \n" << sizeof(IndexMap) << "\n";
+    writeIndex.write((char *) &sizeToWrite, sizeof(size_t));
+    writeIndex.write((char *) &index.saveMap, sizeToWrite);
+    writeIndex.write((char *) &sizeToWrite2, sizeof(size_t));
+    writeIndex.write((char *) &index.nextItemMap, sizeToWrite2);
   }
   
   std::cout << "Hash has been attempted succesfully. \n";
