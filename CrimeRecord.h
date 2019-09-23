@@ -16,6 +16,28 @@ private:
     char ucrPart [20];
     char street [20];
 public:
+    void stringToArray(std::string field_s, char * field_a, int size) {
+        for (int i = 0; i < size; i++) {
+            if (i < sizeof(field_s)) field_a[i] = field_s[i];
+            else field_a[i] = ' ';
+        }
+        field_a[size-1] = '\0';
+    }
+    void setLazy(int i){
+        std::string id = std::to_string(i);
+        stringToArray(id, incidentNumber, sizeof(incidentNumber));
+        stringToArray(std::to_string(i%1000), offenseCode, sizeof(offenseCode));
+        stringToArray(std::to_string(i%100), district, sizeof(district));
+        reportingArea = i%50;
+        shooting = i%10 == 0 ? 'Y' : 'N';
+        year = 2000 + i%20;
+        month = i%12 + 1;
+        stringToArray("Thursday", dayOfWeek, sizeof(dayOfWeek));
+        hour = i%25;
+        stringToArray("NULL", ucrPart, sizeof(ucrPart));
+        stringToArray("Street " + std::to_string(i%400), street, sizeof(street)); 
+    }
+    
     void setData() {
         std::cout << "Enter: id "; std::cin >> incidentNumber; std::cout << "\n";
         std::cout << "Enter: offense "; std::cin >> offenseCode; std::cout << "\n";
@@ -44,5 +66,9 @@ public:
     }
     char * getKey(){
         return incidentNumber;
+    }
+
+    ~CrimeRecord(){
+
     }
 };

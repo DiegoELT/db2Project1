@@ -1,5 +1,4 @@
 #include "FileOrganization.h"
-#include <map>
 
 template<class T>
 class RandomFile : public FileOrganization <T>{

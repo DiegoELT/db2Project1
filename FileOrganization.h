@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <map>
 template <class T>
 class FileOrganization {
     public:
