@@ -11,14 +11,22 @@
   \section{Introducción}
     
     \subsection{Objetivo del Proyecto}
+      
       La meta del presente trabajo es, en una base de datos relacional, desarrollar y probar el funcionamiento de algoritmos de almacenamiento de archivos en memoria secundaria y manejo de concurrencia. Para ello, se hizo uso de un set de data de crímenes en la ciudad de Boston, Massachusets. Sobre esta se implementaron las siguientes tres técnicas de almacenamiento:
       \begin{itemize}
         \item Random File Access
         \item Static Hashing
         \item Dynamic Hashing
       \end{itemize}
-      Se realizaron pruebas, por medio de transacciones, del performance de cada una de las implementaciones para observar las mejoras tanto en tiempo de retribución, como en cantidad de accesos a disco. Se emulo así mismo, el funcionamiento de concurrencia a través de threads. 
+      Se realizaron, por medio de transacciones, pruebas del performance de cada una de las implementaciones para observar las mejoras tanto en tiempo de retribución, como en cantidad de accesos a disco. Se emulo así mismo, el funcionamiento de concurrencia a través de threads. 
     
     \subsection{Definiciones previas}  
-  
+      
+      \subsubsection{Organización de Archivos}
+      
+        Definimos a un archivo como una colección de registros que se encuentra almacenado en algún tipo de memoria secundaria (discos magnéticos, cintas, etc.). Debido a que la velocidad de acceso a esta memoria se encuentra limitado, es necesario una forma de recuperar estos datos de forma eficiente. La organización de archivos se refiere a la relación entre los registros que los conforman. El objetivo de este es aumentar la eficiencia en términos de la identificación y acceso a un registro en particular. Dependiendo de la \textbf{estructura} en particular utilizada para controlar los registros en forma lógica, es que se obtienen diferentes beneficios para las operaciones de búsqueda, inserción, actualización y borrado.
+      
+      \subsubsection{Hashing} 
+        
+              
 \end{document}
