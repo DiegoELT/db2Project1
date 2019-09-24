@@ -4,6 +4,14 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#define B 10
+struct Bucket {
+    int next;
+    int size;
+    char *key [B];
+    long pos [B];
+};
+
 template <class T>
 class FileOrganization {
     public:

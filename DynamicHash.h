@@ -1,17 +1,26 @@
 #include "FileOrganization.h"
-#define B 10
 
+struct IndexInfo {
+    std::string fullName;
+    std::string name;
+    int localDepth;
 
-struct Bucket {
-    int next;
-    int size;
-    char *key [B];
-    long pos [B];
-};
+    void setName(){
+        name = "";
+        int len = fullName.length();
+        for (int i = 0; i < localDepth; i++) name = fullName[len-1-i] + name;
 
-struct indexInfo {
-    int full;
-    char *name;
+    }
+
+    void setFullName(int n, int d) {
+        fullName = "0";
+        for (int i = 1; i < d; i++) fullName = fullName + "0";
+        for(int i=0; n>0; i++)    
+        {    
+            if (n%2 == 0) fullName[d-1-i] = '0'; else fullName[d-1-i] = '1';    
+            n= n/2;  
+        }  
+    }
 };
 
 
@@ -20,8 +29,9 @@ class DynamicHash : public FileOrganization <T>{
 private:
     std::string fileName;
     std::string indexName;
-    std::map <int, indexInfo> index;
+    std::map <int, IndexInfo> index;
     int depth;
+    int binaryDepth;
     int maxBucketSize = B;
     int currentTopFileIndex;
 public:
@@ -35,6 +45,7 @@ public:
     void scan();
     void initIndex();
     void insertionLinked(T record);
+    int getBinaryDepth();
     std::string hash(char * key); 
 };
 
@@ -45,25 +56,28 @@ DynamicHash<T>::DynamicHash(std::string name, int d){
     fileName = name;
     indexName = "dynamicHash/" + fileName + "_ind";
     depth = d;
+    binaryDepth = getBinaryDepth();
     maxBucketSize = B;
     initIndex();
     readIndex();
+    //for (auto f : index) {std::cout << f.first << " " << f.second.fullName << " " << f.second.name << std::endl;}
 }
 
 template <typename T>
+int DynamicHash<T>::getBinaryDepth(){
+    int counter = 0;
+    for (int i = 1; i < depth; i=i*2) counter++;
+    return counter;
+
+}
+template <typename T>
 void DynamicHash<T>::initIndex(){
-    int key;
-    bool full;
-    char * name;
-    for (int i = 0; i < d; i++) {
-        indexInfo newIndex;
-        key = i;
-        full = 1;
-        if (i%2 == 0) name = "0"; else name = "1";
-        newIndex.full = full;
-        newIndex.name = name;
-        std::cout << i; 
-        index[key] = newIndex;
+    for (int i = 0; i < depth; i++) {
+        IndexInfo indexInfo;
+        indexInfo.setFullName(i, binaryDepth);
+        indexInfo.localDepth = 1;
+        indexInfo.setName();
+        index[i] = indexInfo;
     }
 }
 
@@ -77,18 +91,35 @@ void DynamicHash<T>::search(T record){
 
     char * key = record.getKey();
     int current = hashInt(key);
-    
-    Bucket bucket;
 
-    std::string indexFileName = indexName + std::to_string(current);
-    std::ifstream inFile;
-    inFile.open(indexFileName, std::ios::binary);
-    inFile.read((char *) &bucket, sizeof(bucket));
-    inFile.close();
-    int next = bucket.next;
-    int n;
+    if (index[current].localDepth == binaryDepth) {
+        Bucket bucket;
+        std::string indexFileName = indexName + index[current].fullName;
+        std::ifstream inFile;
+        inFile.open(indexFileName, std::ios::binary);
+        inFile.read((char *) &bucket, sizeof(bucket));
+        inFile.close();
+        int next = bucket.next;
+        int n;
 
-    while (current != next) {
+        while (current != next) {
+            n = bucket.size;
+            for (int i = 0; i < n; i++) {
+                if (bucket.key[i] == key) {
+                    std::cout << "Pos: " << bucket.pos[i] << std::endl;
+                    return ;
+                }
+            }
+            indexFileName = indexName + std::to_string(next);
+            
+            inFile.open(indexFileName, std::ios::binary);
+            inFile.read((char *) &bucket, sizeof(bucket));
+            inFile.close();
+            current = next;
+            next = bucket.next;
+            
+        }
+
         n = bucket.size;
         for (int i = 0; i < n; i++) {
             if (bucket.key[i] == key) {
@@ -96,23 +127,23 @@ void DynamicHash<T>::search(T record){
                 return ;
             }
         }
-        indexFileName = indexName + std::to_string(next);
-        
+    } else {
+        Bucket bucket;
+        std::string indexFileName = indexName + index[current].name;
+        std::ifstream inFile;
         inFile.open(indexFileName, std::ios::binary);
         inFile.read((char *) &bucket, sizeof(bucket));
         inFile.close();
-        current = next;
-        next = bucket.next;
-        
-    }
-
-    n = bucket.size;
-    for (int i = 0; i < n; i++) {
-        if (bucket.key[i] == key) {
-            std::cout << "Pos: " << bucket.pos[i] << std::endl;
-            return ;
+        int n = bucket.size;
+        for (int i = 0; i < n; i++) {
+            if (bucket.key[i] == key) {
+                std::cout << "Pos: " << bucket.pos[i] << std::endl;
+                return ;
+            }
         }
     }
+    
+    
     std::cout << "Not found..." << std::endl;
     return ;
     
@@ -121,11 +152,17 @@ void DynamicHash<T>::search(T record){
 template <typename T>
 void DynamicHash<T>::insertion(T record){
     char * key = record.getKey();
-
-    int current = hashInt(key); indexInfo *indexPtr = index[current];
-    if (indexPtr->full) insertionLinked(record);
+    int current = hashInt(key); IndexInfo indexPtr = index[current];
+    if (indexPtr.localDepth == binaryDepth) insertionLinked(record);
     else {
-        int current = hashInt(key); std::string currentFileBucket = indexName + (indexPtr->name);
+        std::ofstream outFile;
+        outFile.open(fileName, std::ios::binary | std::ios::app);
+        outFile.write((char *) &record, sizeof(record));
+        long pos = outFile.tellp();
+        outFile.close();
+        std::string currentName = index[current].name; 
+        std::string currentFileBucket = indexName + currentName;
+
         int next; std::string nextFileBucket;
         int bucketSize;
 
@@ -141,21 +178,52 @@ void DynamicHash<T>::insertion(T record){
         next = bucket.next;
         bucketSize = bucket.size;
         int counter = 0;
-        
-        if (bucketSize == depth) {
+        if (bucketSize == maxBucketSize) {
             for (auto f : index) {
-
+                if (f.second.name == currentName) {
+                    int newBucketIndex = f.first;
+                    f.second.localDepth ++; 
+                    f.second.setName();
+                }
             }
-        }
-        /*
-        - if full
-        - divide bucket into 2 buckets.
-        - update index values
-        - put each bucket in the index. 
-        - check if full in each indexfile and update. Continue
-        */
-    }
+            for (int i = 0; i < bucketSize; i++) {
+                char* reasignKey = bucket.key[i];
+                long reasignPos = bucket.pos[i];
+                int current = hashInt(reasignKey);
 
+                std::string reasign = index[current].name;
+                std::string reasignIndex = indexName + reasign;
+                Bucket obj;
+                obj.size = 0;
+                obj.next =  current;
+                std::ifstream inFile;
+                inFile.open(reasignIndex, std::ios::binary);
+                inFile.read((char *) &obj, sizeof(obj));
+                inFile.close();
+
+                int size = ++obj.size;
+                obj.key[size-1] = reasignKey; 
+                obj.pos[size-1] = reasignPos;
+                
+                std::ofstream outFile;
+                outFile.open(reasignIndex, std::ios::binary | std::ios::trunc);
+                outFile.write((char *) &obj, sizeof(obj));
+                outFile.close();
+                insertion(record);
+            }            
+        } else {
+            std::ofstream outFile;
+            outFile.open(currentFileBucket, std::ios::out | std::ios::trunc);
+            int size = ++bucket.size;
+            bucket.key[size-1] = key;
+            bucket.pos[size-1] = pos;
+            if (size == maxBucketSize && index[hashInt(key)].localDepth == binaryDepth) {
+                bucket.next = ++currentTopFileIndex;
+            }
+            outFile.write((char *) &bucket, sizeof(bucket));
+            outFile.close(); 
+        }
+    }
 }
 
 template <typename T>
@@ -169,7 +237,7 @@ void DynamicHash<T>::insertionLinked(T record){
 
     char * key = record.getKey();
 
-    int current = hashInt(key); std::string currentFileBucket = indexName + hash(key);
+    int current = hashInt(key); std::string currentFileBucket = indexName + index[current].fullName;
     int next; std::string nextFileBucket;
     int bucketSize;
 
@@ -184,8 +252,6 @@ void DynamicHash<T>::insertionLinked(T record){
 
     next = bucket.next;
     bucketSize = bucket.size;
-    std::cout << next << std::endl;
-    std::cout << bucketSize << std::endl;
 
     while(current != next) {
         current = next;
@@ -244,8 +310,8 @@ void DynamicHash<T>::writeIndex(){
     std::ofstream outFile;
     outFile.open(indexName, std::ios::out | std::ios::binary);
     for (auto& pair : index) {
-        outFile.write((char *) &pair.second, sizeof(pair.second));
         outFile.write((char *) &pair.first, sizeof(pair.first));
+        outFile.write((char *) &pair.second, sizeof(pair.second));
     }
     outFile.close();
     std::ofstream metaData;
@@ -258,11 +324,11 @@ template <typename T>
 void DynamicHash<T>::readIndex(){
     std::ifstream inFile;
     inFile.open(indexName, std::ios::in | std::ios::binary);
-    char * key;
-    int size;
-    while (inFile.read((char *) &size, sizeof(size))){
-        inFile.read((char *) &key, sizeof(key));
-        index[key] = size;
+    int key;
+    IndexInfo value;
+    while (inFile.read((char *) &key, sizeof(key))){
+        inFile.read((char *) &value, sizeof(value));
+        index[key] = value;
     }
     inFile.close();
     currentTopFileIndex  = depth - 1;

@@ -1,11 +1,4 @@
 #include "FileOrganization.h"
-#define B 10
-struct Bucket {
-    int next;
-    int size;
-    char *key [B];
-    long pos [B];
-};
 
 
 template<class T>
