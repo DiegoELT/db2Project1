@@ -12,18 +12,21 @@ int main(){
     StaticHash <CrimeRecord> staticFile("static", 8);
     DynamicHash <CrimeRecord> dynamicFile("dynamic", 8);
 
+
     for (int i = 0; i < 100; i ++){
         CrimeRecord obj;
         obj.setLazy(i);
-        randomFile.insertion(obj);
-        staticFile.insertion(obj);
+        std::cout << i << std::endl;
+        //randomFile.insertion(obj);
+        //staticFile.insertion(obj);
         dynamicFile.insertion(obj);
     }
     staticFile.scan();
+
     CrimeRecord test;
     test.setLazy(10);
-    
-    //dynamicFile.search(test);
+ 
+    dynamicFile.search(test);
 
 
 }

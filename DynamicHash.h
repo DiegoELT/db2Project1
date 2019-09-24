@@ -9,6 +9,7 @@ struct IndexInfo {
         name = "";
         int len = fullName.length();
         for (int i = 0; i < localDepth; i++) name = fullName[len-1-i] + name;
+        std::cout << name << std::endl;
 
     }
 
@@ -154,6 +155,7 @@ void DynamicHash<T>::insertion(T record){
     char * key = record.getKey();
     int current = hashInt(key); IndexInfo indexPtr = index[current];
     if (indexPtr.localDepth == binaryDepth) insertionLinked(record);
+    
     else {
         std::ofstream outFile;
         outFile.open(fileName, std::ios::binary | std::ios::app);
@@ -162,6 +164,7 @@ void DynamicHash<T>::insertion(T record){
         outFile.close();
         std::string currentName = index[current].name; 
         std::string currentFileBucket = indexName + currentName;
+        std::cout << currentFileBucket << std::endl;
 
         int next; std::string nextFileBucket;
         int bucketSize;
@@ -178,12 +181,16 @@ void DynamicHash<T>::insertion(T record){
         next = bucket.next;
         bucketSize = bucket.size;
         int counter = 0;
+        std::cout << bucketSize << std::endl;
+        std::cout << maxBucketSize << std::endl;
         if (bucketSize == maxBucketSize) {
-            for (auto f : index) {
+            std::cout << "YEET" << std::endl;
+            for (auto &f : index) {
                 if (f.second.name == currentName) {
                     int newBucketIndex = f.first;
                     f.second.localDepth ++; 
                     f.second.setName();
+                    std::cout << newBucketIndex << std::endl;
                 }
             }
             for (int i = 0; i < bucketSize; i++) {
@@ -193,6 +200,7 @@ void DynamicHash<T>::insertion(T record){
 
                 std::string reasign = index[current].name;
                 std::string reasignIndex = indexName + reasign;
+                std::cout << "YEET " << reasignIndex << std::endl;
                 Bucket obj;
                 obj.size = 0;
                 obj.next =  current;
@@ -224,6 +232,7 @@ void DynamicHash<T>::insertion(T record){
             outFile.close(); 
         }
     }
+
 }
 
 template <typename T>
