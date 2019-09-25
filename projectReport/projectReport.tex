@@ -1,5 +1,7 @@
 \documentclass{article}
 
+\usepackage{listings}
+
 \title{Organización de Archivos y Control de Concurrencia sobre una base de datos relacional de crímenes en Boston}
 \author{Sebastián Hurtado \and Diego Linares \and Piero Marini}
 \date{Septiembre 26, 2019}
@@ -74,10 +76,84 @@
 
       El problema presente en la base de datos a trabajar es el mal planteamiento de algunos de los campos y las formas de acceso a este a través de un archivo \texttt{.csv}. Los datos originales no se encontraban limpios y poseían campos redudantes y de difícil \textit{parsing} que podían ser mejorados. Además, la llave primaria original se encuentra asignada a un valor binario, "shooting", que únicamente podía ser positivo o negativo. Por otra parte, el tener los archivos almacenados en un único \texttt{.csv} permitía únicamente técnicas de acceso secuenciales. A pesar de la simplicidad de la implementación, la búsqueda e inserción de nueva data era lenta y requería cargar todo el archivo en memoria primaria.
 
-    \subsection{Resultados que se esperan obtener} 
+    \subsection{Resultados a obtener} 
 
-      Se esperan obtener mejoras en la performance de las instrucciones de inserción y búsqueda en la base de datos relacional y un control de concurrencia mínimo. Para ello, se están implementando 3 diferentes formas de organización de datos las cuales van a ser comparadas con el mismo proceso en la base de datos original. El control de concurrencia será probado a través de transacciones trabajadas en simultáneo utilizando thread control de UNIX. Se espera que estas realicen una organización serializable que pueda ser aplicada en los diferentes sistemas de organización de archivos.
+      Se espera obtener mejoras en la performance de las instrucciones de inserción y búsqueda en la base de datos relacional y un control de concurrencia mínimo. Para ello, se están implementando 3 diferentes formas de organización de datos las cuales van a ser comparadas con el mismo proceso en la base de datos original. El control de concurrencia será probado a través de transacciones trabajadas en simultáneo utilizando thread control de UNIX. Se espera que estas realicen una organización serializable que pueda ser aplicada en los diferentes sistemas de organización de archivos.
 
-  \section{Fundamente y Describa las técnicas} 
+  \section{Fundamento y descripción las técnicas} 
+
+    \subsection{Descripción de las técnicas}
+
+      \subsubsection{Random File Access}
+
+        En esta técnica los registros en el archivo no requieren ser almacenados secuencialmente. Para mantener la relación entre la llave (en este caso, el Incident Number) y la ubicación del registro en memoria secundaria. La llave es utilizada a través de una función hashing para encontrar la ubicación del registro. Sus ventajas se basan en inserciones y búsquedas eficientes, además de poder mantener el diccionario en todo momento en memoria principal. Su desventaja es el espacio que requiere el mantener este diccionario y las colisiones que pueden ocurrir dependiendo de la función utilizada.
+
+      \subsubsection{Static Hashing}
+        
+        Se tiene un bucket de registros sobre los cuales la función de hash indica a la cual se dirige uno. La cantidad máxima de entradas en el bucket no varía, por lo que la función siempre calcula la misma dirección. Debido a la cantidad de colisiones que esto puede producir se maneja el overflow a través del desbordamiento encadenado. En este se tiene una lista de buckets adicionales y un puntero al final de cada uno que me indica a cual me debo dirigir en caso este lleno.
+
+      \subsubsection{Dynamic (Extendible) Hashing}
+
+        Usado en base de datos que varían tamaño a través del tiempo. La función hash genera una secuencia de bits, del cual solo se usa un sufijo o prefijo del binario para indexar los registros. Cada bucket tiene una profundidad local que indica cuantos bits se están tomando. Esta técnica evita que la base de datos se degrade con el tiempo y minimiza los casos de overflow. Por otro lado, el cambio de tamaño de buckets es una operación cara y no soporta búsquedas por rango.
+
+    \subsection{Aspectos importantes de la implementación}
+        
+      \subsubsection{Preparación de la data} 
+        
+        Como parte del pre-procesamiento de la información previo a cada una de las técnicas de organización se realizaron los siguientes procesos: 
+
+        \begin{itemize}
+
+          \item \textbf{Carpetas y Metadata:} Debido a la cantidad de archivos creados por cada una de las pruebas de las técnicas de almacenamiento, fue necesario la creación de carpetas para cada uno de los buckets a generarse. Además debido al uso de la técnica de \textit{desbordamiento encadenado}, es necesario guardar información tal como el \texttt{top bucket} y el \texttt{index} en memoria secundaria de forma que estos puedan ser cargados antes de cada uso del programa. Esto puede ser observado en las clases \texttt{StaticHash.h} y \texttt{DynamicHash.h}. 
+
+          \item \textbf{Limpieza y Generación Aleatoria:} La base de datos original poseía diversos campos sobre los cuales era díficil hacer parsing, y otros que se encontraban mal parseados en su totalidad (como es el caso de "Shooting"), por lo cual fue necesario reducir el tamaño de la tabla antes de su uso a los 11 campos considerados de mayor importancia. Para las pruebas de inserción y búsqueda de archivos individuales se creo una función \texttt{setLazy()} para generar registros aleatorios con mínimos cambios entre estos.
+
+        \end{itemize}
+
+      \subsubsection{FileOrganization.h}
+      
+        Archivo que contenía la estructura \texttt{Bucket} y la clase base para la implementación de las técnicas de organización de archivos, la cual toma la siguiente forma. 
+
+        \begin{lstlisting}[language=C++]
+        
+          #define B 10
+          struct Bucket {
+            int next;
+            int size;
+            char *key [B];
+            long pos [B];
+          };
+
+          template <class T>
+          class FileOrganization {
+            public:
+              virtual void readIndex() = 0;
+              virtual void writeIndex() = 0;
+              virtual void scan() = 0;
+              virtual void insertion(T record) = 0;
+              virtual void search(T record) = 0;
+          };
+
+        \end{lstlisting}
+        
+        Este contiene las funciones básicas que fueron implementadas en cada una de las técnicas. 
+
+      \subsubsection{Técnicas de Organización} 
+        
+        La implementación de cada una de las técnicas fue realizada utilizando conceptos de programación genérica (uso de templates), y la implementación de cada una de las funciones listadas. La función de hasheo utilizada fue utilizar el módulo de la profundidad de los buckets presentes. La implementación de cada una de las funciones para cada una de las técnicas puede ser observada en el repositorio de GitHub del proyecto.
+
+    \subsection{Manejo de Memoria Secundaria}
+
+      El manejo de memoria secundaria se puede ver en el uso de metadata y buckets en forma de archivos que se guardan en el disco duro al momento de correr el programa. Para la creación de un objeto que va a realizar cada una de las técnicas de organización es necesario la lectura de un archivo que se encuentra en memoria secundaria. La creación de buckets y su guardado también se realiza en memoria secundaria, por lo cual hay carpetas designadas para cada uno de estos. Como prueba del software funcionando apropiadamente, vemos la generación de nuevos archivos en cada uno de las carpetas designadas. El programa además, a diferencia de uno que solo funciona en memoria primaria, es que puede ser utilizado varias veces sin pérdida de información gracias al uso de "metadata" en forma de archivos adicionales.
+
+    \subsection{Simulación de Transacciones}
+
+      Las transacciones fueron simuladas en forma de funciones que realizaban un cierto número de operaciones de inserción y búsqueda utilizando un mismo tipo de técnica de organización, y para el control de concurrencia se utilizaron hilos que realizaban estas funciones en simultáneo. Se hizo una variedad de transacciones para cada una de las pruebas. Su funcionamiento correcto se comprobo invocándolas sobre un conjunto de archivos ya existentes para ver que se ejecutaran apropiadamente. Un conjunto de indicadores en forma de texto se utilizaron para observar el orden en el que ocurrieron cada una de las operaciones. Se esperaba obtener una planificación serializable al momento de llevar a cabo las transacciones a través de hilos.
+
+  \section{Resultados Experimentales}
+
+    \subsection{Cuadros Comparativos}
+
+    \subsection{Análisis de los Resultados}
 
 \end{document}
