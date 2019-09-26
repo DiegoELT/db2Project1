@@ -2,6 +2,7 @@
 
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage[section]{placeins}
 
 \title{Organización de Archivos y Control de Concurrencia sobre una base de datos relacional de crímenes en Boston}
 \author{Sebastián Hurtado \and Diego Linares \and Piero Marini}
@@ -137,7 +138,7 @@
 
         \end{lstlisting}
         
-        Este contiene las funciones básicas que fueron implementadas en cada una de las técnicas. 
+          Este contiene las funciones básicas que fueron implementadas en cada una de las técnicas. Un aspecto importante a recalcar es que el resto de implementaciones de las técnica heredan a esta clase para la implementación de sus funciones básicas. Este uso de herencia facilita el no tener que crear las mismas funciones para cada uno de los metodos de organización. 
 
       \subsubsection{Técnicas de Organización} 
         
@@ -161,14 +162,14 @@
     
       \begin{figure}[h]
 
-        \includegraphics[width = \textwidth]{tiempoInsercion}
+        \includegraphics[width = 0.8\textwidth]{tiempoInsercion}
         \caption{Cuadro comparativo del tiempo de inserción de cada una de las técnicas de Organización de Archivos}
 
       \end{figure}
 
       \begin{figure}[h]
 
-        \includegraphics[width = \textwidth]{tiempoBusqueda}
+        \includegraphics[width = 0.8\textwidth]{tiempoBusqueda}
         \caption{Cuadro comparativo del tiempo de búsqueda de caddad una de las técnicas de Organización de Archivos}
 
       \end{figure}
@@ -181,7 +182,15 @@
 
   \section{Pruebas de Uso}
 
-    Como pruebas de uso de la aplicación creada fueron a través de transacciones que realizaban las operaciones básicas de la base de datos. Estas tenían diferentes iteraciones de las operaciones de inserción y búsqueda. Se tomaron las siguientes imagenes de la implementación y el funcionamiento de las mismas.
+    Como pruebas de uso de la aplicación creada fueron a través de transacciones que realizaban las operaciones básicas de la base de datos. Estas tenían diferentes iteraciones de las operaciones de inserción y búsqueda. Se tomaron las siguientes imagenes de la implementación y el funcionamiento de las mismas. \\
+
+    \includegraphics[width = 0.8\textwidth]{image1}
+
+    \includegraphics[width = 0.8\textwidth]{image2}
+
+    \includegraphics[width = 0.8\textwidth]{image3}
+
+   Como es posible observar, también se realizo el uso de hilos en las transacciones para ver el control de concurrencia. Siendo el resultado parte de la información (los números que se pueden ver en las capturas) que se muestra en pantalla. Él codigo muestra el índice de los objetos que encuentra, y en caso de no encontrarlos muestra un mensaje de error con respecto a la búsqueda del registro en particular que se estaba buscando.
 
   \section{Conclusiones}
     
