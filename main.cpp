@@ -3,7 +3,27 @@
 #include "StaticHash.h"
 #include "DynamicHash.h"
 #include <chrono>
+
+#include <thread>
+#include <random>
+#include <mutex>
+
 #define TESTS 1
+
+
+std::random_device rd;
+std::mt19937 mt(rd());
+std::uniform_int_distribution<int> dist(1, 2000);
+
+std::mutex fileLock;
+
+template<typename FileOrganization>
+void transactionExecute(FileOrganization* file) {
+	CrimeRecord tmp;
+	tmp.setLazy(dist(mt));
+    std::lock_guard<std::mutex> guard(fileLock);
+	file->insertion(tmp);
+}
 
 
 int main(){
@@ -36,6 +56,12 @@ int main(){
     std::chrono::duration<double> elapsed = finish - start;
 
     std::cout << "Elapsed time: " << elapsed.count() << " s\n";
+
+
+    std::thread t1(&transactionExecute<StaticHash<CrimeRecord>>, &staticFile);
+    std::thread t2(&transactionExecute<StaticHash<CrimeRecord>>, &staticFile);
+	t1.join();
+	t2.join();
 
     //randomFile.scan();
 
