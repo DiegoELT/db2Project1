@@ -1,0 +1,24 @@
+\contentsline {section}{\numberline {1}Introducci\IeC {\'o}n}{1}% 
+\contentsline {subsection}{\numberline {1.1}Objetivo del Proyecto}{1}% 
+\contentsline {subsection}{\numberline {1.2}Definiciones previas}{1}% 
+\contentsline {subsubsection}{\numberline {1.2.1}Organizaci\IeC {\'o}n de Archivos}{1}% 
+\contentsline {subsubsection}{\numberline {1.2.2}Acceso a Archivos}{2}% 
+\contentsline {subsubsection}{\numberline {1.2.3}Hashing}{2}% 
+\contentsline {subsection}{\numberline {1.3}Descripci\IeC {\'o}n del dominio de datos y planteamiento del problema}{3}% 
+\contentsline {subsection}{\numberline {1.4}Resultados a obtener}{3}% 
+\contentsline {section}{\numberline {2}Fundamento y descripci\IeC {\'o}n las t\IeC {\'e}cnicas}{4}% 
+\contentsline {subsection}{\numberline {2.1}Descripci\IeC {\'o}n de las t\IeC {\'e}cnicas}{4}% 
+\contentsline {subsubsection}{\numberline {2.1.1}Random File Access}{4}% 
+\contentsline {subsubsection}{\numberline {2.1.2}Static Hashing}{4}% 
+\contentsline {subsubsection}{\numberline {2.1.3}Dynamic (Extendible) Hashing}{4}% 
+\contentsline {subsection}{\numberline {2.2}Aspectos importantes de la implementaci\IeC {\'o}n}{4}% 
+\contentsline {subsubsection}{\numberline {2.2.1}Preparaci\IeC {\'o}n de la data}{4}% 
+\contentsline {subsubsection}{\numberline {2.2.2}FileOrganization.h}{5}% 
+\contentsline {subsubsection}{\numberline {2.2.3}T\IeC {\'e}cnicas de Organizaci\IeC {\'o}n}{5}% 
+\contentsline {subsection}{\numberline {2.3}Manejo de Memoria Secundaria}{6}% 
+\contentsline {subsection}{\numberline {2.4}Simulaci\IeC {\'o}n de Transacciones}{6}% 
+\contentsline {section}{\numberline {3}Resultados Experimentales}{6}% 
+\contentsline {subsection}{\numberline {3.1}Cuadros Comparativos}{6}% 
+\contentsline {subsection}{\numberline {3.2}An\IeC {\'a}lisis de los Resultados}{6}% 
+\contentsline {section}{\numberline {4}Pruebas de Uso}{7}% 
+\contentsline {section}{\numberline {5}Conclusiones}{7}% 

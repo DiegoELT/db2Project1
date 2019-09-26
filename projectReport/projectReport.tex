@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{listings}
+\usepackage{graphicx}
 
 \title{Organización de Archivos y Control de Concurrencia sobre una base de datos relacional de crímenes en Boston}
 \author{Sebastián Hurtado \and Diego Linares \and Piero Marini}
@@ -78,7 +79,7 @@
 
     \subsection{Resultados a obtener} 
 
-      Se espera obtener mejoras en la performance de las instrucciones de inserción y búsqueda en la base de datos relacional y un control de concurrencia mínimo. Para ello, se están implementando 3 diferentes formas de organización de datos las cuales van a ser comparadas con el mismo proceso en la base de datos original. El control de concurrencia será probado a través de transacciones trabajadas en simultáneo utilizando thread control de UNIX. Se espera que estas realicen una organización serializable que pueda ser aplicada en los diferentes sistemas de organización de archivos.
+      Se espera obtener mejoras en la performance de las instrucciones de inserción y búsqueda en la base de datos relacional y un control de concurrencia mínimo. Para ello, se están implementando 3 diferentes formas de organización de datos las cuales van a ser comparadas con el mismo proceso en la base de datos original. El control de concurrencia será probado a través de transacciones trabajadas en simultáneo utilizando thread control de unix. Se espera que estas realicen una organización serializable que pueda ser aplicada en los diferentes sistemas de organización de archivos.
 
   \section{Fundamento y descripción las técnicas} 
 
@@ -152,8 +153,46 @@
 
   \section{Resultados Experimentales}
 
+    Para la evaluación del funcionamiento de la aplicación, se uso la función de generación de elementos aleatorios para crear los registros que se iban a insertar en los archivos, y se tomaron los tiempos respectivos de las operaciones de inserción y búsqueda.
+
     \subsection{Cuadros Comparativos}
 
+      Se tienen 2 cuadros comparativos a mostrar.
+    
+      \begin{figure}[h]
+
+        \includegraphics[width = \textwidth]{tiempoInsercion}
+        \caption{Cuadro comparativo del tiempo de inserción de cada una de las técnicas de Organización de Archivos}
+
+      \end{figure}
+
+      \begin{figure}[h]
+
+        \includegraphics[width = \textwidth]{tiempoBusqueda}
+        \caption{Cuadro comparativo del tiempo de búsqueda de caddad una de las técnicas de Organización de Archivos}
+
+      \end{figure}
+
     \subsection{Análisis de los Resultados}
+
+      Como es posible observar en los gráficos presentados, el tiempo de inserción y búsqueda tiende a ser mucho menor en el Random File Organization comparado con las otras técnicas de hasheo utilizadas. Esto se puede deber a que en este método de archivos carga todo su index en memoria primaria antes de empezar. En comparación, Static Hashing y Dynamic Hashing requieren estar constantemente haciendo accesos a disco más pequeños para recuperar el map que los lleva a determinado registro. Con respecto a estos últimos 2, el Static Hashing presenta pequeñas ventajas cuando se refiere a trabajar con pequeñas cantidades de datos, o una profundidad alta, debido a que los casos de overflow son mínimos. Sin embargo, conforme la cantidad de archivos a insertarse y/o buscarse aumentaba, se veían claras mejoras en el uso de Dynamic Hashing. Las diferencias de tiempo se hacían exponenciales conforme el número de operaciones aumentaba. \\
+
+      Las ventajas del dynamic hashing es que evita los overflows iniciales diviendo los buckets con una profundidad local menor en buckets de profundidad mayor. Un caso común que ocurría en las búsquedas finales  (de elementos que se encontraban casi al final de los buckets estáticos), es que se tenía que recorrer todos los buckets previos de forma secuencial, lo cual añadía sustancialmente al tiempo necesario para encontrar el registro necesario. En el caso del dynamic hashing, debido a la menor cantidad de buckets que se encuentran en desenbordamiento encadenado, no es necesario hacer un recorrido secuencial tan largo para llegar al registro en cuestión.
+
+  \section{Pruebas de Uso}
+
+    Como pruebas de uso de la aplicación creada fueron a través de transacciones que realizaban las operaciones básicas de la base de datos. Estas tenían diferentes iteraciones de las operaciones de inserción y búsqueda. Se tomaron las siguientes imagenes de la implementación y el funcionamiento de las mismas.
+
+  \section{Conclusiones}
+    
+    Sintetizando, se pudieron analizar e implementar satisfactoriamente tres técnicas de organización de archivos para una base de datos relacional. Como fuente de información se utilizó una base de datos previamente existente, pero que sufría porblemas en su gestión debido a su planteamiento. El trabajo consistió en replantear esta base de datos para hacerla trabajable (además de crear una función de generación de datos aleatoria) y realizar operaciones en la misma a través de las técnicas implementadas. Las pruebas de uso a través de las transacciones se completaron de forma eficiente y mostraron un cierto nivel de control de concurrencia al ser ejecutadas en simúltaneo. En una futura iteración del proyecto se desea realizar una interfaz gráfica para realizar las operaciones. \\
+
+    Las dificultades que surgieron durante el trabajo estan orientadas tanto a la limpieza de la base de datos original, como a la implementación de las diferentes técnicas. Por un lado, la falta de coherencia de la base de datos, hubieron complicaciones al momento de leer los archivos a variables de tamaño fijo para poder realizar las implementaciones. Este fue el motivo principal para hacer una función que genere datos aleatoriamente. Por otra parte, el trabajar con memoria secundaria complico las implementaciones de las técnicas de manejo de archivos, debido a que no se podía tener todo en memoria principal al mismo tiempo, fue necesario la creación de archivos de meetadata para guardar la información, lo cual represento un costo adicional para algunas de las operaciones. Un aspecto que resulto de guía fue el hacer una analogía entre \textit{filenames} y punteros, que se comportaban de manera similar en la organización de archivos. 
+  
+  \section{Anexo}
+    
+    \subsection{Link del Código en GitHub}
+
+      https://github.com/DiegoELT/db2Project1.git
 
 \end{document}
